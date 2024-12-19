@@ -3,17 +3,22 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # 获取股票数据
-symbol = "aapl"
-start_date = "2021-01-01"
-end_date = "2024-06-01"
+symbol = "AAPL"
+start_date = "2022-01-01"
+end_date = "2024-12-03"
 
-data = yf.download(symbol, start=start_date, end=end_date)
+try:
+    data = yf.download(symbol, start=start_date, end=end_date)
+    if data.empty:
+        raise ValueError("下载的数据为空，请检查股票代码和日期范围。")
+except Exception as e:
+    print(f"数据下载失败: {e}")
+    exit()
 
-# 计算移动平均
+# 计算简单移动平均线
 data['SMA_50'] = data['Close'].rolling(window=50).mean()
 data['SMA_200'] = data['Close'].rolling(window=200).mean()
 
-# 初始化交叉信号列
 data['Signal'] = 0
 
 # 计算交叉信号
@@ -28,6 +33,11 @@ data['Strategy_Return'] = data['Signal'].shift(1) * data['Daily_Return']
 
 # 计算累计收益
 data['Cumulative_Return'] = (1 + data['Strategy_Return']).cumprod()
+
+# 检查数据是否足够长以进行计算
+if len(data) < 252:
+    print("数据长度不足，无法计算年度收益率。")
+    exit()
 
 # 输出策略表现
 strategy_performance = {
@@ -49,3 +59,5 @@ plt.xlabel("Date")
 plt.ylabel("Cumulative Return")
 plt.legend()
 plt.show()
+
+#finish
