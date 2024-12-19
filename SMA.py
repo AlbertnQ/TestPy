@@ -60,4 +60,10 @@ plt.ylabel("Cumulative Return")
 plt.legend()
 plt.show()
 
-#finish
+
+# 输出2024年3月1日的收盘价
+date_to_check = "2024-03-01"
+if date_to_check in data.index:
+    print(f"2024年3月1日的收盘价: {data.loc[date_to_check]['Close']}")
+else:
+    print("2024年3月1日的数据不可用。")
